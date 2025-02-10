@@ -1,0 +1,45 @@
+{
+    "presets": [
+      // @babel/preset-typescript: Transpiles TypeScript into JavaScript
+      "@babel/preset-typescript",
+  
+      // @babel/preset-env: Allows targeting specific environments (like modern browsers).
+      [
+        "@babel/preset-env",
+        {
+          // "targets": specifies the target environments (browsers with more than 0.25% market share, excluding dead browsers).
+          "targets": "> 0.25%, not dead",
+  
+          // "useBuiltIns": "usage" ensures that only the polyfills needed for the target environment are included.
+          // This reduces the final bundle size by only adding necessary polyfills.
+          "useBuiltIns": "usage",
+  
+          // "corejs": specifies which version of core-js should be used for polyfilling JavaScript features.
+          "corejs": 3,
+  
+          // "modules": false prevents Babel from transpiling ES modules into CommonJS, keeping ES module syntax for React.
+          "modules": false
+        }
+      ],
+  
+      // @babel/preset-react: Transpiles JSX into JavaScript for React.
+      // It converts JSX syntax into JavaScript function calls (like React.createElement).
+      "@babel/preset-react"
+    ],
+  
+    "plugins": [
+      // @babel/plugin-transform-runtime: Reduces code duplication and optimizes runtime helpers.
+      "@babel/plugin-transform-runtime",
+  
+      // @babel/plugin-proposal-class-properties: Allows using class properties in JavaScript classes.
+      "@babel/plugin-proposal-class-properties",
+  
+      // @babel/plugin-proposal-optional-chaining: Adds support for optional chaining (?.).
+      "@babel/plugin-proposal-optional-chaining"
+    ],
+  
+    // "ignore": Specifies files or patterns to exclude from Babel's processing.
+    // In this case, we ignore TypeScript declaration files (.d.ts) as they don’t need to be transpiled.
+    "ignore": ["**/*.d.ts"]
+  }
+  

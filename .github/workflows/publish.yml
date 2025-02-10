@@ -1,0 +1,41 @@
+name: Publish
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      content: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm install
+      - run: npm run build
+      - run: |
+          echo @muhammadjalil8481:https://npm.pkg.github.com/ > build/.npmrc
+          echo '//npm.pkg.github.com/:_authToken=${jobber_auth_token}' >> build/.npmrc
+      - run: npm publish
+        working-directory: ./build
+        env:
+          jobber_auth_token: ${{secrets.GITHUB_TOKEN}}
