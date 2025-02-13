@@ -15,6 +15,7 @@ jobs:
     name: Build the package
     runs-on: ubuntu-latest
     steps:
+    
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup node enviroment
