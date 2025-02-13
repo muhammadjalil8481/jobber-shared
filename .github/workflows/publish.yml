@@ -25,6 +25,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Build the package
+        run: npm run build
 
   publish:
     name: Publish to GitHub Packages
