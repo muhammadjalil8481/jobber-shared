@@ -16,8 +16,7 @@ export function uploads(
         public_id,
         overwrite,
         invalidate,
-        chunk_size: 50000,
-        resource_type: 'auto',
+        resource_type: 'auto', 
       },
       (
         error: UploadApiErrorResponse | undefined,

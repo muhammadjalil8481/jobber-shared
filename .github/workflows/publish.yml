@@ -1,41 +1,49 @@
-name: Publish
+name: Publish jobber github package
 on:
   push:
     branches: [master]
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read         # Read access to repo contents
+  pull-requests: write   # Allows commenting/updating PRs
+  packages: write        # Required if publishing to GitHub Packages
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
 jobs:
-  publish:
+  build:
+    name: Build the package
     runs-on: ubuntu-latest
-    permissions:
-      content: read
-      packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node enviroment
+        uses: actions/setup-node@v4        
         with:
-          node-version: '16.x'
-      - run: npm install
-      - run: npm run build
-      - run: |
-          echo @muhammadjalil8481:https://npm.pkg.github.com/ > build/.npmrc
-          echo '//npm.pkg.github.com/:_authToken=${jobber_auth_token}' >> build/.npmrc
-      - run: npm publish
-        working-directory: ./build
+          node-version: '18.x'
+          registry-url: https://npm.pkg.github.com/
+      - name: Install Dependencies
+        run: npm install
+      - name: Build the package
+
+  publish:
+    name: Publish to GitHub Packages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://npm.pkg.github.com/
+      - name: Install dependencies
+        run: npm install
+      - name: Build the package
+        run: npm run build
+      - name: Publish package
+        run: npm publish
         env:
-          jobber_auth_token: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
