@@ -61,7 +61,7 @@ jobs:
         run: npm version minor -m "Bump version to %s [skip ci]"
 
       - name: Publish package
-        run: npm publish dist
+        run: npm publish ./dist
         env:
           NODE_AUTH_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
 
