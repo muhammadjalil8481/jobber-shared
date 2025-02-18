@@ -1,6 +1,6 @@
 {
   "name": "@muhammadjalil8481/jobber-shared",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "license": "MIT",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
