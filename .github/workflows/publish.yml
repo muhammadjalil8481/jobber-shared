@@ -1,7 +1,9 @@
-name: Publish jobber github package
+name: CI/CD for Jobber GitHub Package
 
 on:
   push:
+    branches: [master]
+  pull_request:
     branches: [master]
 
 permissions:
@@ -10,8 +12,28 @@ permissions:
   packages: write       # Required if publishing to GitHub Packages
 
 jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4 
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the package
+        run: npm run build
+
   publish:
-    name: Publish to GitHub Packages
+    if: github.event_name == 'push'
+    name: Temp Publish to GitHub Packages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -58,7 +80,7 @@ jobs:
 
       - name: Bump version
         id: bump-version
-        run: npm version minor -m "Bump version to %s [skip ci]"
+        run: npm version patch -m "Bump version to %s [skip ci]"
 
       - name: Publish package
         run: npm publish
@@ -67,4 +89,5 @@ jobs:
 
       - name: Push version commit (only if publish succeeds)
         run: |
-          git push origin master || echo "Warning: Failed to push version commit, but package is already published."
+          git push origin temp-branch || echo "Warning: Failed to push version commit, but package is already published."
+
