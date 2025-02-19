@@ -2,6 +2,7 @@ import { ObjectId } from "mongoose";
 import { IRatingCategories, IReviewDocument } from "./review.interface";
 import { ISellerDocument } from "./seller.interface";
 
+
 export type GigType =
   | string
   | string[]
