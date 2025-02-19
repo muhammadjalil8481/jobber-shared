@@ -1,0 +1,93 @@
+name: CI/CD for Jobber GitHub Package
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: write       # Needed for committing changes
+  pull-requests: write  # Allows commenting/updating PRs
+  packages: write       # Required if publishing to GitHub Packages
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the package
+        run: npm run build
+
+  publish:
+    if: github.event_name == 'push'
+    name: Temp Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Git user identity
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the package
+        run: npm run build
+
+      - name: Get latest published version
+        id: latest-version
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          LATEST_VERSION=$(npm show $PACKAGE_NAME version --registry=https://npm.pkg.github.com/ || echo "$LOCAL_VERSION")
+          echo "Latest published version: $LATEST_VERSION"
+          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
+
+      - name: Sync local version with latest published version
+        run: |
+          node -e "
+            let fs = require('fs');
+            let pkg = require('./package.json');
+            pkg.version = process.env.LATEST_VERSION;
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+          git add package.json
+          git commit -m "Sync package.json version to $LATEST_VERSION" || echo "No changes to commit"
+
+      - name: Bump version
+        id: bump-version
+        run: npm version minor -m "Bump version to %s [skip ci]"
+
+      - name: Publish package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
+
+      - name: Push version commit (only if publish succeeds)
+        run: |
+          git push origin temp-branch || echo "Warning: Failed to push version commit, but package is already published."
+
