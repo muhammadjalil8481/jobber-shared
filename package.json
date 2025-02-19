@@ -14,7 +14,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:esm": "babel src --out-dir dist/esm --extensions .ts,.tsx --source-maps",
     "build:cjs": "babel src --out-dir dist/cjs --extensions .ts,.tsx --source-maps --plugins @babel/plugin-transform-modules-commonjs",
-    "build": "npm run clean && npm run build:types && npm run build:esm && npm run build:cjs && exit 1",
+    "build": "npm run clean && npm run build:types && npm run build:esm && npm run build:cjs",
     "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
     "start": "node dist/cjs/index.js",
     "publish:patch": "npm version patch && npm run build && npm publish",
