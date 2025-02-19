@@ -89,5 +89,5 @@ jobs:
 
       - name: Push version commit (only if publish succeeds)
         run: |
-          git push origin temp-branch || echo "Warning: Failed to push version commit, but package is already published."
+          git push origin master || echo "Warning: Failed to push version commit, but package is already published."
 
