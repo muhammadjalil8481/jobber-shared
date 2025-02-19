@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 import JWT from 'jsonwebtoken';
 import { NotAuthorizedError } from './error-handler.ts';
 
@@ -20,8 +20,6 @@ interface TokenPayload {
 
 export function verifyGatewayRequest(
   req: Request,
-  res: Response,
-  next: NextFunction
 ): void {
   const token: string = req.headers?.gatewayToken as string;
   if (!token)
