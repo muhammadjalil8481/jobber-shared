@@ -5,7 +5,6 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.mjs",
   "description": "Helpers library for Jobber app",
-  "type": "module",
   "engines": {
     "node": ">=18"
   },
