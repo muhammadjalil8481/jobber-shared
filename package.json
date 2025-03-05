@@ -46,7 +46,7 @@
       "require": "./dist/cjs/icons/index.js"
     }
   },
-  "types": "./src/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "dependencies": {
     "@elastic/elasticsearch": "^8.17.0",
     "cloudinary": "^2.5.1",
