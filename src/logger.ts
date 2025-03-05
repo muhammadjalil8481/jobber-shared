@@ -1,31 +1,42 @@
-import winston, { Logger } from 'winston';
+import winston, { Logger, transport } from 'winston';
 import {
   ElasticsearchTransformer,
   TransformedData,
   LogData,
   ElasticsearchTransport,
 } from 'winston-elasticsearch';
+import {
+  LoggerOptionArguments,
+  LoggerOptions,
+} from './interfaces/logger.interface';
 
 const elasticSearchTransformer = (logData: LogData): TransformedData => {
   const transformed = ElasticsearchTransformer(logData);
   return transformed;
 };
 
-export const winstonLogger = (
-  elasticSearchNode: string,
-  name: string,
-  level: string
-): Logger => {
-  const options = {
+export const winstonLogger = ({
+  level,
+  name,
+  elasticSearchNode,
+}: LoggerOptionArguments): Logger => {
+  const options: LoggerOptions = {
     console: {
       level,
       handleExceptions: true,
       json: true,
       colorize: true,
     },
-    elasticsearch: {
+  };
+
+  const transports: transport[] = [
+    new winston.transports.Console(options.console),
+  ];
+
+  if (elasticSearchNode) {
+    options.elasticsearch = {
       level,
-      tranformer: elasticSearchTransformer,
+      transformer: elasticSearchTransformer,
       clientOpts: {
         node: elasticSearchNode,
         log: level,
@@ -33,20 +44,18 @@ export const winstonLogger = (
         requestTimeout: 10000,
         sniffToStart: false,
       },
-    },
-  };
+    };
+    const elasticSearchTransport: ElasticsearchTransport =
+      new ElasticsearchTransport(options.elasticsearch);
+    transports.push(elasticSearchTransport);
+  }
 
-  const elasticSearchTransport: ElasticsearchTransport =
-    new ElasticsearchTransport(options.elasticsearch);
   const logger: Logger = winston.createLogger({
     exitOnError: false,
     defaultMeta: {
       service: name,
     },
-    transports: [
-      new winston.transports.Console(options.console),
-      elasticSearchTransport,
-    ],
+    transports,
   });
 
   return logger;
