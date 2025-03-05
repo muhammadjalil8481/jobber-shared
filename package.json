@@ -3,7 +3,7 @@
   "version": "0.7.6",
   "license": "MIT",
   "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "module": "dist/esm/index.mjs",
   "description": "Helpers library for Jobber app",
   "type": "module",
   "engines": {
@@ -12,7 +12,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:esm": "babel src --out-dir dist/esm --extensions .ts,.tsx --source-maps",
+    "build:esm": "babel src --out-dir dist/esm --extensions .ts,.tsx --source-maps --out-file-extension .mjs",
     "build:cjs": "babel src --out-dir dist/cjs --extensions .ts,.tsx --source-maps --plugins @babel/plugin-transform-modules-commonjs",
     "build": "npm run clean && npm run build:types && npm run build:esm && npm run build:cjs",
     "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
@@ -38,11 +38,11 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
+      "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.js"
     },
     "./icons": {
-      "import": "./dist/esm/icons/index.js",
+      "import": "./dist/esm/icons/index.mjs",
       "require": "./dist/cjs/icons/index.js"
     }
   },
