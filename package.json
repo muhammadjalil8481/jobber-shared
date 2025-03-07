@@ -48,6 +48,7 @@
   },
   "types": "./dist/types/index.d.ts",
   "dependencies": {
+    "@babel/runtime": "^7.26.9",
     "@elastic/elasticsearch": "^8.17.0",
     "cloudinary": "^2.5.1",
     "express": "^4.21.2",
