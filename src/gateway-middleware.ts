@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import JWT from 'jsonwebtoken';
-import { NotAuthorizedError } from './error-handler.ts';
+import { NotAuthorizedError } from './error-handler';
 
 const tokens: string[] = [
   'auth',

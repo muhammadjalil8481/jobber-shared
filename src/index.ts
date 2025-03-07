@@ -1,28 +1,25 @@
 // interfaces and types
-export * from './interfaces/auth.interface.ts';
-export * from './interfaces/buyer.interface.ts';
-export * from './interfaces/chat.interface.ts';
-export * from './interfaces/email.interface.ts';
-export * from './interfaces/order.interface.ts';
-export * from './interfaces/review.interface.ts';
-export * from './interfaces/search.interface.ts';
-export * from './interfaces/seller.interface.ts';
-export {
-  LogLevel,
-  LoggerOptionArguments,
-} from './interfaces/logger.interface.ts';
+export * from './interfaces/auth.interface';
+export * from './interfaces/buyer.interface';
+export * from './interfaces/chat.interface';
+export * from './interfaces/email.interface';
+export * from './interfaces/order.interface';
+export * from './interfaces/review.interface';
+export * from './interfaces/search.interface';
+export * from './interfaces/seller.interface';
+export type {LogLevel,LoggerOptionArguments} from './interfaces/logger.interface';
 
 // file upload
-export * from './cloudinary-upload.ts';
+export * from './cloudinary-upload';
 
 // Error handlers
-export * from './error-handler.ts';
+export * from './error-handler';
 
 // Gateway Middleware
-export * from './gateway-middleware.ts';
+export * from './gateway-middleware';
 
 // Logger Function
-export * from './logger.ts';
+export * from './logger';
 
 // Helper functions
-export * from './helpers.ts';
+export * from './helpers';
