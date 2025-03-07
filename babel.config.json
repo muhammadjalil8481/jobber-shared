@@ -36,9 +36,12 @@
   
       // @babel/plugin-proposal-optional-chaining: Adds support for optional chaining (?.).
       "@babel/plugin-proposal-optional-chaining",
-      ["module-resolver", {
-        "extensions": [".cjs", ".js", ".ts", ".tsx"]
-      }]
+      [
+        "babel-plugin-add-import-extension",
+        {
+          "extension": "cjs"
+        }
+      ]
     ],
   
     // "ignore": Specifies files or patterns to exclude from Babel's processing.
