@@ -7,7 +7,10 @@ export * from './interfaces/order.interface';
 export * from './interfaces/review.interface';
 export * from './interfaces/search.interface';
 export * from './interfaces/seller.interface';
-export type {LogLevel,LoggerOptionArguments} from './interfaces/logger.interface';
+export {
+  LogLevel,
+  type LoggerOptionArguments,
+} from './interfaces/logger.interface';
 
 // file upload
 export * from './cloudinary-upload';
