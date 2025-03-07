@@ -41,9 +41,9 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs"
     },
-    "./icons": {
-      "import": "./dist/esm/icons/index.mjs",
-      "require": "./dist/cjs/icons/index.cjs"
+    "./*": {
+      "import": "./dist/esm/*.mjs",
+      "require": "./dist/cjs/*.cjs"
     }
   },
   "types": "./dist/types/index.d.ts",
