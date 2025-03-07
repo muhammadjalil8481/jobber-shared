@@ -35,7 +35,10 @@
       "@babel/plugin-proposal-class-properties",
   
       // @babel/plugin-proposal-optional-chaining: Adds support for optional chaining (?.).
-      "@babel/plugin-proposal-optional-chaining"
+      "@babel/plugin-proposal-optional-chaining",
+      ["module-resolver", {
+        "extensions": [".cjs", ".js", ".ts", ".tsx"]
+      }]
     ],
   
     // "ignore": Specifies files or patterns to exclude from Babel's processing.
