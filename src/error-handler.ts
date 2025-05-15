@@ -12,7 +12,7 @@ export interface IError {
   message: string;
   statusCode: number;
   status: string;
-  comingFrom: string;
+  comingFrom?: string;
 }
 
 export abstract class CustomError extends Error {
@@ -30,7 +30,7 @@ export abstract class CustomError extends Error {
       message: this.message,
       statusCode: this.statusCode,
       status: this.status,
-      comingFrom: this.comingFrom,
+      ...(process.env.NODE_ENV === "development" && { comingFrom: this.comingFrom }),
     };
   }
 }

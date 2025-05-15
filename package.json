@@ -15,7 +15,7 @@
     "build:esm": "babel src --out-dir dist/esm --extensions .ts,.tsx --source-maps --out-file-extension .mjs",
     "build:cjs": "babel src --out-dir dist/cjs --extensions .ts,.tsx --source-maps --plugins @babel/plugin-transform-modules-commonjs --out-file-extension .cjs",
     "build": "npm run clean && npm run build:types && npm run build:esm && npm run build:cjs",
-    "dev": "tsx watch src/index.ts",
+    "dev": "cross-env CLEAR_CMD=clear && tsx watch src/index.ts",
     "start": "node dist/cjs/index.cjs",
     "publish:patch": "npm version patch && npm run build && npm publish",
     "publish:minor": "npm version minor && npm run build && npm publish",
