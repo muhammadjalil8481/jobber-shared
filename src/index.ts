@@ -26,3 +26,4 @@ export * from './logger';
 
 // Helper functions
 export * from './helpers';
+export * from './utils/validateEnv';
