@@ -50,6 +50,25 @@ export const winstonLogger = ({
     transports.push(elasticSearchTransport);
   }
 
+  const logMethods = ['info', 'warn', 'error', 'debug'] as const;
+
+  const isDebug = Boolean(process.env.DEBUG);
+  logMethods.forEach((method) => {
+    const original = logger[method].bind(logger);
+    logger[method] = (...args) => {
+      // Pipe to original logger
+      !isDebug && original(...args);
+
+      // Pipe to VS Code Debug Console
+      const tag = `[${method.toUpperCase()}]`;
+
+      // @ts-ignore - Ignore the type error here
+      isDebug && console[method === 'debug' ? 'log' : method](tag, ...args);
+
+      return logger;
+    };
+  });
+
   const logger: Logger = winston.createLogger({
     exitOnError: false,
     defaultMeta: {
