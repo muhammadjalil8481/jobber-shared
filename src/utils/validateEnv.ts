@@ -11,7 +11,7 @@ export function validateEnvVariables(config: ConfigType) {
   }
 
   if (missingVars.length > 0) {
-    console.error(`Missing environment variables: ${missingVars.join(', ')}`);
+    console.error(`Error : Missing environment variables: ${missingVars.join(', ')}`);
     process.exit(1);
   }
 }
