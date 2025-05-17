@@ -21,6 +21,9 @@ export * from './error-handler';
 // Gateway Middleware
 export * from './gateway-middleware';
 
+// Classes
+export * from './classes/config';
+
 // Logger Function
 export * from './logger';
 
