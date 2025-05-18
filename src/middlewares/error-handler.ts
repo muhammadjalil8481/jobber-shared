@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Logger } from 'winston';
 import { CustomError, IErrorResponse } from '../error-handler';
 
@@ -8,7 +8,7 @@ interface Params {
 }
 
 function errorHandlerMiddleware({ log, serviceName }: Params) {
-  return (error: IErrorResponse, _req: Request, res: Response) => {
+  return (error: IErrorResponse, _req: Request, res: Response, _next:NextFunction) => {
     try {
       log.error(
         `${serviceName} service error ${error?.comingFrom || 'unknown source'}`,
