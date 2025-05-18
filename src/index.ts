@@ -18,8 +18,9 @@ export * from './cloudinary-upload';
 // Error handlers
 export * from './error-handler';
 
-// Gateway Middleware
-export * from './gateway-middleware';
+// Middlewares
+export * from './middlewares/gateway-middleware';
+export * from './middlewares/error-handler';
 
 // Classes
 export * from './classes/config';

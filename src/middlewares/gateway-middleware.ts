@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import JWT from 'jsonwebtoken';
-import { NotAuthorizedError } from './error-handler';
+import { NotAuthorizedError } from '../error-handler';
 
 const tokens: string[] = [
   'auth',
@@ -18,9 +18,7 @@ interface TokenPayload {
   iat: number;
 }
 
-export function verifyGatewayRequest(
-  req: Request,
-): void {
+export function verifyGatewayRequest(req: Request): void {
   const token: string = req.headers?.gatewayToken as string;
   if (!token)
     throw new NotAuthorizedError(
