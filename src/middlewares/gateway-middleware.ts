@@ -1,43 +1,32 @@
-import { Request } from 'express';
-import JWT from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express';
+import crypto from 'crypto';
 import { NotAuthorizedError } from '../error-handler';
+import { Logger } from 'winston';
 
-const tokens: string[] = [
-  'auth',
-  'seller',
-  'gig',
-  'search',
-  'buyer',
-  'message',
-  'order',
-  'review',
-];
+export const GatewayRequestVerification = (log: Logger, publicKey: string) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      const signature = req.headers['x-gateway-token'] as string;
 
-interface TokenPayload {
-  id: string;
-  iat: number;
-}
+      const verifier = crypto.createVerify('SHA256');
+      verifier.end();
 
-export function verifyGatewayRequest(req: Request): void {
-  const token: string = req.headers?.gatewayToken as string;
-  if (!token)
-    throw new NotAuthorizedError(
-      'Invalid request',
-      'verifyGatewayRequest method'
-    );
+      const isValid = verifier.verify(publicKey, signature, 'base64');
 
-  try {
-    const payload: TokenPayload = JWT.verify(token, '') as TokenPayload;
-    if (!tokens?.includes(payload.id)) {
+      if (isValid) {
+        throw new NotAuthorizedError(
+          'Unauthorized request',
+          'GatewayRequestVerification method()'
+        );
+      }
+
+      next();
+    } catch (error) {
+      log.error('Unexpected Error GatewayRequestVerification method', error);
       throw new NotAuthorizedError(
-        'Invalid request',
-        'verifyGatewayRequest method'
+        'Unauthorized request',
+        'GatewayRequestVerification method()'
       );
     }
-  } catch (err) {
-    throw new NotAuthorizedError(
-      'Invalid request',
-      'verifyGatewayRequest method catch block'
-    );
-  }
-}
+  };
+};
