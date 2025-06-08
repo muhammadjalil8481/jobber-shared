@@ -67,6 +67,9 @@ export const winstonLogger = ({
     message: string,
     err: Error | CustomError
   ) => {
+    if (!err) {
+      return originalError(message);
+    }
     const isCustom = err instanceof CustomError;
 
     const rawStack = (err.stack || '').replace(/\\/g, '/');
