@@ -9,6 +9,8 @@ import {
   LoggerOptionArguments,
   LoggerOptions,
 } from './interfaces/logger.interface';
+import { CustomError } from './error-handler';
+import cleanStack from 'clean-stack';
 
 const elasticSearchTransformer = (logData: LogData): TransformedData => {
   const transformed = ElasticsearchTransformer(logData);
@@ -57,6 +59,39 @@ export const winstonLogger = ({
     },
     transports,
   });
+
+  // Patch the `.error()` function to always format error logs consistently
+  const originalError = logger.error.bind(logger);
+
+  (logger.error as (message: string, err: Error | CustomError) => Logger) = (
+    message: string,
+    err: Error | CustomError
+  ) => {
+    const isCustom = err instanceof CustomError;
+
+    const rawStack = (err.stack || '').replace(/\\/g, '/');
+
+    const cleaned = cleanStack(rawStack, {
+      pretty: true,
+      basePath: process.cwd(),
+    });
+
+    const filteredStack = cleaned
+      .split('\n')
+      .filter((line) => !line.includes('node_modules'))
+      .join('\n');
+
+    const formattedError = {
+      service: name,
+      comingFrom: isCustom ? err.comingFrom || 'unknown source' : undefined,
+      message: err?.message || 'Unknown error',
+      statusCode: isCustom ? err.statusCode : 500,
+      status: isCustom ? err.status : 'error',
+      stack: !isCustom ? `\n${filteredStack}` : undefined,
+    };
+
+    return originalError(message, formattedError);
+  };
 
   return logger;
 };

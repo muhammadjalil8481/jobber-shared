@@ -13,7 +13,7 @@ export const GatewayRequestVerification = (log: Logger, publicKey: string) => {
 
       const isValid = verifier.verify(publicKey, signature, 'base64');
 
-      if (isValid) {
+      if (!isValid) {
         throw new NotAuthorizedError(
           'Unauthorized request',
           'GatewayRequestVerification method()'
