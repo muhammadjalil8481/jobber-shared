@@ -8,6 +8,13 @@ export const GatewayRequestVerification = (log: Logger, publicKey: string) => {
     try {
       const signature = req.headers['x-gateway-token'] as string;
 
+      if (!signature) {
+        throw new NotAuthorizedError(
+          'Unauthorized request',
+          'GatewayRequestVerification method()'
+        );
+      }
+
       const verifier = crypto.createVerify('SHA256');
       verifier.end();
 
