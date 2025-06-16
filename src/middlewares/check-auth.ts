@@ -13,7 +13,7 @@ export const checkAuthentication = (
         'Unauthorized.',
         'Gateway Service checkAuthentication() method'
       );
-
+    req.currentUser = JSON.parse(userHeader);
     next();
   } catch (error) {
     throw new NotAuthorizedError(
