@@ -21,6 +21,7 @@ export * from './error-handler';
 // Middlewares
 export * from './middlewares/gateway-middleware';
 export * from './middlewares/error-handler';
+export * from "./middlewares/check-auth"
 
 // Classes
 export * from './classes/config';
