@@ -28,7 +28,7 @@ function errorHandlerMiddleware({ log, serviceName }: Params) {
         res.status(error.statusCode).json(error.serializeErrors());
       } else {
         res.status(error.statusCode || 500).json({
-          message: error.message || "Internal Server Error",
+          message: "Internal Server Error",
         });
       }
     } catch (err) {
