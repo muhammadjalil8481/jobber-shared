@@ -7,13 +7,24 @@ interface Params {
   serviceName: string;
 }
 
+const harmfulStatusCodes = [500, 401, 403, 409, 422];
+
 function errorHandlerMiddleware({ log, serviceName }: Params) {
-  return (error: IErrorResponse, _req: Request, res: Response, _next:NextFunction) => {
+  return (
+    error: IErrorResponse,
+    _req: Request,
+    res: Response,
+    _next: NextFunction
+  ) => {
     try {
-      log.error(
-        `${serviceName} service error ${error?.comingFrom || 'unknown source'}`,
-        error
-      );
+      if (harmfulStatusCodes.includes(parseInt(error.statusCode?.toString())))
+        log.error(
+          `${serviceName} service error ${
+            error?.comingFrom || 'unknown source'
+          }`,
+          error
+        );
+
       if (error instanceof CustomError) {
         res.status(error.statusCode).json(error.serializeErrors());
       } else {
