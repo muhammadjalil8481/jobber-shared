@@ -1,13 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
-import { Logger } from 'winston';
-import { CustomError, IErrorResponse } from '../error-handler';
+import { NextFunction, Request, Response } from "express";
+import { Logger } from "winston";
+import { CustomError, IErrorResponse } from "../error-handler";
 
 interface Params {
   log: Logger;
   serviceName: string;
 }
-
-const harmfulStatusCodes = [500, 401, 403, 409, 422];
 
 function errorHandlerMiddleware({ log, serviceName }: Params) {
   return (
@@ -17,10 +15,11 @@ function errorHandlerMiddleware({ log, serviceName }: Params) {
     _next: NextFunction
   ) => {
     try {
-      if (harmfulStatusCodes.includes(parseInt(error.statusCode?.toString())))
+      const isCustomError = error instanceof CustomError;
+      if (!isCustomError)
         log.error(
           `${serviceName} service error ${
-            error?.comingFrom || 'unknown source'
+            error?.comingFrom || "unknown source"
           }`,
           error
         );
@@ -29,7 +28,7 @@ function errorHandlerMiddleware({ log, serviceName }: Params) {
         res.status(error.statusCode).json(error.serializeErrors());
       } else {
         res.status(error.statusCode || 500).json({
-          message: error.message || 'Internal Server Error',
+          message: error.message || "Internal Server Error",
         });
       }
     } catch (err) {
@@ -38,7 +37,7 @@ function errorHandlerMiddleware({ log, serviceName }: Params) {
         err
       );
       res.status(500).json({
-        message: 'Internal Server Error',
+        message: "Internal Server Error",
       });
     }
   };
