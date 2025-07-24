@@ -30,7 +30,6 @@ export abstract class CustomError extends Error {
       message: this.message,
       statusCode: this.statusCode,
       status: this.status,
-      ...(process.env.NODE_ENV === "development" && { comingFrom: this.comingFrom }),
     };
   }
 }
