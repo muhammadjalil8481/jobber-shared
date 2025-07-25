@@ -1,9 +1,9 @@
-import winston, { Logger, transport } from 'winston';
-import cleanStack from 'clean-stack';
-import { CustomError } from './error-handler';
-import { LoggerOptionArguments } from './interfaces/logger.interface';
+import winston, { Logger, transport } from "winston";
+import cleanStack from "clean-stack";
+import { CustomError } from "./error-handler";
+import { LoggerOptionArguments } from "./interfaces/logger.interface";
 
-export type StrictLogger = Omit<Logger, 'info' | 'error'> & {
+export type StrictLogger = Omit<Logger, "info" | "error"> & {
   info: (message: string, context: string) => void;
   error: (
     message: string,
@@ -14,7 +14,7 @@ export type StrictLogger = Omit<Logger, 'info' | 'error'> & {
 
 const getFormattedTimestamp = (): string => {
   const now = new Date();
-  const pad = (n: number): string => n.toString().padStart(2, '0');
+  const pad = (n: number): string => n.toString().padStart(2, "0");
   return `${pad(now.getDate())}-${pad(
     now.getMonth() + 1
   )}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(
@@ -30,7 +30,7 @@ export const winstonLogger = ({
     let cleanedStack = null;
     const errorStack = (info?.error as { stack: string })?.stack?.replace(
       /\\/g,
-      '/'
+      "/"
     );
     if (errorStack) {
       cleanedStack = cleanStack(errorStack, {
@@ -38,14 +38,14 @@ export const winstonLogger = ({
         basePath: process.cwd(),
       });
       cleanedStack = cleanedStack
-        .split('\n')
+        .split("\n")
         .filter(
           (line) =>
-            !line.includes('node_modules') &&
-            !line.includes('internal/') &&
-            !line.includes('/tsx/')
+            !line.includes("node_modules") &&
+            !line.includes("internal/") &&
+            !line.includes("/tsx/")
         )
-        .join('\n');
+        .join("\n");
     }
     return JSON.stringify(
       Object.assign(
@@ -54,11 +54,12 @@ export const winstonLogger = ({
           timestamp: getFormattedTimestamp(),
           service: name,
           message: info.message,
-          context: info.context || 'unknown',
+          context: info.context || "unknown",
         },
         info.error
           ? {
-              message: (info.error as { message: string }).message,
+              message:
+                info.message || (info.error as { message: string }).message,
               stack: cleanedStack,
             }
           : {}
