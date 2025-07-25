@@ -1,100 +1,96 @@
 import winston, { Logger, transport } from 'winston';
-import {
-  ElasticsearchTransformer,
-  TransformedData,
-  LogData,
-  ElasticsearchTransport,
-} from 'winston-elasticsearch';
-import {
-  LoggerOptionArguments,
-  LoggerOptions,
-} from './interfaces/logger.interface';
-import { CustomError } from './error-handler';
 import cleanStack from 'clean-stack';
+import { CustomError } from './error-handler';
+import { LoggerOptionArguments } from './interfaces/logger.interface';
 
-const elasticSearchTransformer = (logData: LogData): TransformedData => {
-  const transformed = ElasticsearchTransformer(logData);
-  return transformed;
+export type StrictLogger = Omit<Logger, 'info' | 'error'> & {
+  info: (message: string, context: string) => void;
+  error: (
+    message: string,
+    context: string,
+    error?: Error | CustomError
+  ) => void;
+};
+
+const getFormattedTimestamp = (): string => {
+  const now = new Date();
+  const pad = (n: number): string => n.toString().padStart(2, '0');
+  return `${pad(now.getDate())}-${pad(
+    now.getMonth() + 1
+  )}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(
+    now.getSeconds()
+  )}`;
 };
 
 export const winstonLogger = ({
   level,
   name,
-  elasticSearchNode,
-}: LoggerOptionArguments): Logger => {
-  const options: LoggerOptions = {
-    console: {
+}: LoggerOptionArguments): StrictLogger => {
+  const consoleFormat = winston.format.printf((info) => {
+    let cleanedStack = null;
+    const errorStack = (info?.error as { stack: string })?.stack?.replace(
+      /\\/g,
+      '/'
+    );
+    if (errorStack) {
+      cleanedStack = cleanStack(errorStack, {
+        pretty: true,
+        basePath: process.cwd(),
+      });
+      cleanedStack = cleanedStack
+        .split('\n')
+        .filter(
+          (line) =>
+            !line.includes('node_modules') &&
+            !line.includes('internal/') &&
+            !line.includes('/tsx/')
+        )
+        .join('\n');
+    }
+    return JSON.stringify(
+      Object.assign(
+        {
+          level: info.level,
+          timestamp: getFormattedTimestamp(),
+          service: name,
+          message: info.message,
+          context: info.context || 'unknown',
+        },
+        info.error
+          ? {
+              message: (info.error as { message: string }).message,
+              stack: cleanedStack,
+            }
+          : {}
+      )
+    );
+  });
+  const transports: transport[] = [
+    new winston.transports.Console({
       level,
       handleExceptions: true,
-      json: true,
-      colorize: true,
-    },
-  };
-
-  const transports: transport[] = [
-    new winston.transports.Console(options.console),
+      format: consoleFormat,
+    }),
   ];
-
-  if (elasticSearchNode) {
-    options.elasticsearch = {
-      level,
-      transformer: elasticSearchTransformer,
-      clientOpts: {
-        node: elasticSearchNode,
-        log: level,
-        maxRetries: 2,
-        requestTimeout: 10000,
-        sniffToStart: false,
-      },
-    };
-    const elasticSearchTransport: ElasticsearchTransport =
-      new ElasticsearchTransport(options.elasticsearch);
-    transports.push(elasticSearchTransport);
-  }
 
   const logger: Logger = winston.createLogger({
     exitOnError: false,
-    defaultMeta: {
-      service: name,
-    },
     transports,
   });
 
-  // Patch the `.error()` function to always format error logs consistently
+  const originalInfo = logger.info.bind(logger);
   const originalError = logger.error.bind(logger);
+  const strictLogger: StrictLogger = Object.assign(logger, {
+    info: (message: string, context: string) => {
+      originalInfo(message, { context });
+    },
+    error: (message: string, context: string, error?: Error | CustomError) => {
+      originalError(message, {
+        context,
+        ...(error ? { error } : {}),
+      });
+    },
+  });
 
-  (logger.error as (message: string, err: Error | CustomError) => Logger) = (
-    message: string,
-    err: Error | CustomError
-  ) => {
-    if (!err) {
-      return originalError(message);
-    }
-    const isCustom = err instanceof CustomError;
-
-    const rawStack = (err.stack || '').replace(/\\/g, '/');
-
-    const cleaned = cleanStack(rawStack, {
-      pretty: true,
-      basePath: process.cwd(),
-    });
-
-    const filteredStack = cleaned
-      .split('\n')
-      .filter((line) => !line.includes('node_modules'))
-      .join('\n');
-
-    const formattedError = {
-      service: name,
-      comingFrom: isCustom ? err.comingFrom || 'unknown source' : undefined,
-      message: err?.message || 'Unknown error',
-      statusCode: isCustom ? err.statusCode : 500,
-      status: isCustom ? err.status : 'error',
-      stack: !isCustom ? `\n${filteredStack}` : undefined,
-    };
-
-    return originalError(message, formattedError);
-  };
-
-  return logger;
+  return strictLogger;
 };
