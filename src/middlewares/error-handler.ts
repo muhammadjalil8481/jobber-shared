@@ -1,6 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { CustomError, IErrorResponse } from '../error-handler';
-import { StrictLogger } from '../logger';
+import { NextFunction, Request, Response } from "express";
+import { StrictLogger } from "../logger";
+import { CustomError, IErrorResponse } from "../error-handler";
+
+
 
 interface Params {
   log: StrictLogger;
@@ -24,7 +26,7 @@ export function errorHandlerMiddleware({ log, serviceName }: Params) {
         );
         res.status(500).json({
           status: 'error',
-          message: 'Internal Server Error',
+          message: 'Internal Server Error. Please try again later',
         });
       } else {
         log.error('Custom Error', error.comingFrom, error);
