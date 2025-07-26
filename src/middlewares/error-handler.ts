@@ -4,11 +4,10 @@ import { StrictLogger } from '../logger';
 
 interface Params {
   log: StrictLogger;
-  fileName: string;
   serviceName: string;
 }
 
-export function errorHandlerMiddleware({ log, fileName, serviceName }: Params) {
+export function errorHandlerMiddleware({ log, serviceName }: Params) {
   return (
     error: Error | IErrorResponse,
     _req: Request,
@@ -28,11 +27,11 @@ export function errorHandlerMiddleware({ log, fileName, serviceName }: Params) {
           message: 'Internal Server Error',
         });
       } else {
-        log.error('Custom Error', error.comingFrom);
+        log.error('Custom Error', error.comingFrom, error);
         res.status(error.statusCode).json(error.serializeErrors());
       }
     } catch (err) {
-      log.error(`Unexpected Error`, `${fileName}/${serviceName}`, err as Error);
+      log.error(`Unexpected Error in global error handler`, serviceName, err as Error);
       res.status(500).json({
         status: 'error',
         message: 'Internal Server Error',
