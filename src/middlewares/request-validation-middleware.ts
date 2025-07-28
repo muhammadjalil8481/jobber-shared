@@ -16,7 +16,7 @@ export function validateRequest(schema: ObjectSchema) {
 
       return res.status(400).json({
         status: "error",
-        errors: fieldErrors,
+        error: fieldErrors,
       });
     }
 
