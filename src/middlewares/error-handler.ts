@@ -1,46 +1,43 @@
 import { NextFunction, Request, Response } from "express";
-import { Logger } from "winston";
+import { StrictLogger } from "../logger";
 import { CustomError, IErrorResponse } from "../error-handler";
 
+
+
 interface Params {
-  log: Logger;
+  log: StrictLogger;
   serviceName: string;
 }
 
-function errorHandlerMiddleware({ log, serviceName }: Params) {
+export function errorHandlerMiddleware({ log, serviceName }: Params) {
   return (
-    error: IErrorResponse,
+    error: Error | IErrorResponse,
     _req: Request,
     res: Response,
     _next: NextFunction
   ) => {
     try {
       const isCustomError = error instanceof CustomError;
-      if (!isCustomError)
+      if (!isCustomError) {
         log.error(
-          `${serviceName} service error ${
-            error?.comingFrom || "unknown source"
-          }`,
-          error
+          `Unexpected Error`,
+          (error as IErrorResponse).comingFrom,
+          error as Error
         );
-
-      if (error instanceof CustomError) {
-        res.status(error.statusCode).json(error.serializeErrors());
-      } else {
-        res.status(error.statusCode || 500).json({
-          message: "Internal Server Error",
+        res.status(500).json({
+          status: 'error',
+          message: 'Internal Server Error. Please try again later',
         });
+      } else {
+        log.error('Custom Error', error.comingFrom, error);
+        res.status(error.statusCode).json(error.serializeErrors());
       }
     } catch (err) {
-      log.error(
-        `${serviceName} Service Unexpected Error in error handler middleware`,
-        err
-      );
+      log.error(`Unexpected Error in global error handler`, serviceName, err as Error);
       res.status(500).json({
-        message: "Internal Server Error",
+        status: 'error',
+        message: 'Internal Server Error',
       });
     }
   };
 }
-
-export { errorHandlerMiddleware };

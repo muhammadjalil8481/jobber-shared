@@ -27,6 +27,7 @@ export const winstonLogger = ({
   name,
 }: LoggerOptionArguments): StrictLogger => {
   const consoleFormat = winston.format.printf((info) => {
+     const isCustomError = info.error instanceof CustomError;
     let cleanedStack = null;
     const errorStack = (info?.error as { stack: string })?.stack?.replace(
       /\\/g,
@@ -58,8 +59,7 @@ export const winstonLogger = ({
         },
         info.error
           ? {
-              message:
-                info.message || (info.error as { message: string }).message,
+              message: isCustomError ? info.message : (info.error as { message: string }).message,
               stack: cleanedStack,
             }
           : {}

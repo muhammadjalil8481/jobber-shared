@@ -1,6 +1,6 @@
 {
   "name": "@muhammadjalil8481/jobber-shared",
-  "version": "0.7.34",
+  "version": "0.7.42",
   "license": "MIT",
   "main": "dist/cjs/index.cjs",
   "module": "dist/esm/index.mjs",
@@ -54,6 +54,7 @@
     "cloudinary": "^2.5.1",
     "express": "^4.21.2",
     "http-status-codes": "^2.3.0",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "winston": "^3.17.0",
