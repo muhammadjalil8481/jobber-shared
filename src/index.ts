@@ -21,7 +21,7 @@ export * from './error-handler';
 // Middlewares
 export * from './middlewares/gateway-middleware';
 export * from './middlewares/error-handler';
-export * from "./middlewares/check-auth"
+export * from './middlewares/check-auth';
 
 // Classes
 export * from './classes/config';
@@ -32,3 +32,4 @@ export * from './logger';
 // Helper functions
 export * from './helpers';
 export * from './utils/validateEnv';
+export * from './utils/createFingerprint';
