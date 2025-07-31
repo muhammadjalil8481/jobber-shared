@@ -11,14 +11,14 @@ export const checkAuthentication = (
     if (!userHeader)
       throw new NotAuthorizedError(
         'Unauthorized.',
-        'Gateway Service checkAuthentication() method'
+        'checkAuthentication() method'
       );
     req.currentUser = JSON.parse(userHeader);
     next();
   } catch (error) {
     throw new NotAuthorizedError(
       'Unauthorized.',
-      'Gateway Service checkAuthentication() method'
+      `checkAuthentication() method ${error}`,
     );
   }
 };

@@ -10,6 +10,7 @@ export interface IAuthPayload {
   id: number;
   username: string;
   email: string;
+  fingerprint: string;
   iat?: number;
 }
 
