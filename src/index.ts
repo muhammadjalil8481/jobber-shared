@@ -24,6 +24,9 @@ export * from './middlewares/error-handler';
 export * from "./middlewares/check-auth"
 export * from "./middlewares/request-validation-middleware"
 
+// Event Broker
+export * from "./events"
+
 // Classes
 export * from './classes/config';
 
