@@ -114,3 +114,33 @@ export interface IAuthUser {
   updatedAt: Date | null;
   username: string | null;
 }
+
+export interface IRoleDocument {
+  id: number;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IPermissionDocument {
+  id: number;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUserRoleDocument {
+  id: number;
+  userId: number;
+  roleId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IRolePermissionDocument {
+  id: number;
+  permissionId: number;
+  roleId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
