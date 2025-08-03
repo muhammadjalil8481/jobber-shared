@@ -22,7 +22,8 @@ export * from './error-handler';
 export * from './middlewares/gateway-middleware';
 export * from './middlewares/error-handler';
 export * from "./middlewares/check-auth"
-export * from "./middlewares/request-validation-middleware"
+export * from "./middlewares/request-validation-middleware";
+export * from "./middlewares/check-permission";
 
 // Event Broker
 export * from "./events"
