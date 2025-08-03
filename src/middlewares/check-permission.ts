@@ -34,3 +34,13 @@ export function checkPermission(redisClient: RedisClientType, name: string) {
     else throw new NotAuthorizedError('Unauthorized', context);
   };
 }
+
+export const withPermission = (
+  permission: string,
+  getRedisClient: () => RedisClientType
+) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const redis = getRedisClient();
+    return checkPermission(redis, permission)(req, res, next);
+  };
+};
