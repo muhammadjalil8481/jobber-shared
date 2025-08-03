@@ -37,10 +37,10 @@ export function checkPermission(redisClient: RedisClientType, name: string) {
 
 export const withPermission = (
   permission: string,
-  getRedisClient: () => RedisClientType
+  redisClient: RedisClientType
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const redis = getRedisClient();
-    return checkPermission(redis, permission)(req, res, next);
+    // const redis = getRedisClient();
+    return checkPermission(redisClient, permission)(req, res, next);
   };
 };
