@@ -167,7 +167,7 @@ async function consumeMessage(data: ConsumerParams): Promise<void> {
         }
       },
       {
-        noAck: true, // Must manually ack or nack message if set to false
+        noAck: false, // Must manually ack or nack message if set to false
       }
     );
   } catch (error) {
