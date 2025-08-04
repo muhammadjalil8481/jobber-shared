@@ -6,7 +6,7 @@ export interface IBuyerDocument {
   email?: string;
   profilePicture?: string;
   country: string;
-  isSeller?: boolean;
+  roles: number[];
   purchasedGigs: string[];
   createdAt?: Date | string;
   updatedAt?: Date | string;

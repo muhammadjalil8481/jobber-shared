@@ -148,6 +148,10 @@ async function consumeMessage(data: ConsumerParams): Promise<void> {
 
       async (message: ConsumeMessage | null) => {
         try {
+          log.info(
+            `Received message exchange - ${exchangeName} - data ${message?.content}`,
+            context
+          );
           await handler(message!);
           channel.ack(message!);
           log.info(
