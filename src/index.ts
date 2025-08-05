@@ -21,12 +21,12 @@ export * from './error-handler';
 // Middlewares
 export * from './middlewares/gateway-middleware';
 export * from './middlewares/error-handler';
-export * from "./middlewares/check-auth"
-export * from "./middlewares/request-validation-middleware";
-export * from "./middlewares/check-permission";
+export * from './middlewares/check-auth';
+export * from './middlewares/request-validation-middleware';
+export * from './middlewares/check-permission';
 
 // Event Broker
-export * from "./events"
+export * from './events';
 
 // Classes
 export * from './classes/config';
