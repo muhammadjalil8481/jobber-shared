@@ -11,7 +11,7 @@ export interface IAuthPayload {
   username: string;
   email: string;
   fingerprint: string;
-  roles: number[]
+  roles: number[];
   iat?: number;
 }
 
@@ -25,6 +25,7 @@ export interface IAuth {
 
 export interface IAuthDocument {
   id?: number;
+  name?: string;
   profilePublicId?: string;
   username?: string;
   email?: string;
