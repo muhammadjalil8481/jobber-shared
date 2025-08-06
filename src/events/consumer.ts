@@ -55,7 +55,8 @@ export async function consumeMessage(data: ConsumerParams): Promise<void> {
         } catch (error) {
           log.error(
             `Failed to consume message - exchange ${data.exchangeName}`,
-            context
+            context,
+            error as Error
           );
           channel.nack(message!, false, true);
         }
