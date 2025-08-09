@@ -59,6 +59,7 @@ export interface ICertificate {
 
 export interface ISellerDocument extends Record<string, SellerType> {
   _id?: string | ObjectId;
+  buyerId: string | ObjectId;
   profilePublicId?: string;
   fullName: string;
   username?: string;
