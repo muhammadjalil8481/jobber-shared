@@ -6,6 +6,7 @@ export interface IBuyerDocument {
   username?: string;
   email?: string;
   profilePicture?: string;
+  profilePublicId?: string;
   country: string;
   roles: number[];
   purchasedGigs: string[];
