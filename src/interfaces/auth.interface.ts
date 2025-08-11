@@ -122,6 +122,7 @@ export interface IRoleDocument {
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  roleId?: number;
 }
 
 export interface IPermissionDocument {
