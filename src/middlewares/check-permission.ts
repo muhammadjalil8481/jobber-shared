@@ -11,24 +11,21 @@ export function checkPermission(redisClient: RedisClientType, name: string) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     let hasPermission = false;
     const context = 'check-permission.middleware.ts/checkPermission()';
-    const roles = req.currentUser?.roles;
-    if (!roles?.length) throw new NotAuthorizedError('Unauthorized', context);
+    const roleId = req.currentUser?.roleId;
+    if (!roleId) throw new NotAuthorizedError('Unauthorized', context);
 
-    let permissions = await redisClient.get('role-permissions');
-    if (!permissions?.length)
+    let rolePermissions = await redisClient.get('role-permissions');
+    if (!rolePermissions?.length)
       throw new NotAuthorizedError('Unauthorized', context);
 
-    const parsedPermissions: PermissionList[] = JSON.parse(permissions);
+    const parsedRolePermissions: PermissionList[] = JSON.parse(rolePermissions);
 
-    for (let role of roles) {
-      const filteredPermission = parsedPermissions.find(() => {
-        return roles.includes(role);
-      })?.permissions;
+    const userRolePermission = parsedRolePermissions.find((rolePermission) => {
+      return rolePermission.roleId === roleId;
+    })?.permissions;
 
-      if (filteredPermission?.includes(name)) {
-        hasPermission = true;
-        break;
-      }
+    if (userRolePermission?.includes(name)) {
+      hasPermission = true;
     }
     if (hasPermission) next();
     else throw new NotAuthorizedError('Unauthorized', context);
