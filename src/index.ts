@@ -30,6 +30,7 @@ export * from './events';
 
 // Classes
 export * from './classes/config';
+export * from './classes/redis';
 
 // Logger Function
 export * from './logger';
