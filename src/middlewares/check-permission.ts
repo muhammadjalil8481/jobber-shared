@@ -1,46 +1,95 @@
-import { NextFunction, Request, Response } from 'express';
-import { NotAuthorizedError } from '../error-handler';
-import { RedisClientType } from 'redis';
+import winston, { Logger, transport } from 'winston';
+import cleanStack from 'clean-stack';
+import { CustomError } from '../error-handler';
+import { LoggerOptionArguments } from '../interfaces/logger.interface';
 
-interface PermissionList {
-  roleId: number;
-  permissions: string[];
-}
+export type StrictLogger = Omit<Logger, 'info' | 'error'> & {
+  info: (message: string, context: string) => void;
+  error: (
+    message: string,
+    context: string,
+    error?: Error | CustomError
+  ) => void;
+};
 
-export function checkPermission(redisClient: RedisClientType, name: string) {
-  return async (req: Request, _res: Response, next: NextFunction) => {
-    let hasPermission = false;
-    const context = 'check-permission.middleware.ts/checkPermission()';
-    const roles = req.currentUser?.roles;
-    if (!roles?.length) throw new NotAuthorizedError('Unauthorized', context);
+const getFormattedTimestamp = (): string => {
+  const now = new Date();
+  const pad = (n: number): string => n.toString().padStart(2, '0');
+  return `${pad(now.getDate())}-${pad(
+    now.getMonth() + 1
+  )}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(
+    now.getSeconds()
+  )}`;
+};
 
-    let permissions = await redisClient.get('role-permissions');
-    if (!permissions?.length)
-      throw new NotAuthorizedError('Unauthorized', context);
-
-    const parsedPermissions: PermissionList[] = JSON.parse(permissions);
-
-    for (let role of roles) {
-      const filteredPermission = parsedPermissions.find(() => {
-        return roles.includes(role);
-      })?.permissions;
-
-      if (filteredPermission?.includes(name)) {
-        hasPermission = true;
-        break;
-      }
+export const winstonLogger = ({
+  level,
+  name,
+}: LoggerOptionArguments): StrictLogger => {
+  const consoleFormat = winston.format.printf((info) => {
+    const isCustomError = info.error instanceof CustomError;
+    let cleanedStack = null;
+    const errorStack = (info?.error as { stack: string })?.stack?.replace(
+      /\\/g,
+      '/'
+    );
+    if (errorStack) {
+      cleanedStack = cleanStack(errorStack, {
+        pretty: true,
+        basePath: process.cwd(),
+      });
+      cleanedStack = cleanedStack
+        .split('\n')
+        .filter(
+          (line) => line.includes("src")
+        ).join('\n')
     }
-    if (hasPermission) next();
-    else throw new NotAuthorizedError('Unauthorized', context);
-  };
-}
+    return JSON.stringify(
+      Object.assign(
+        {
+          level: info.level,
+          timestamp: getFormattedTimestamp(),
+          service: name,
+          message: info.message,
+          context: info.context || 'unknown',
+        },
+        info.error
+          ? {
+              errorType: isCustomError ? 'CustomError' : 'Error',
+              errorMessage: (info.error as { message: string }).message,
+              message: info.message,
+              stack: cleanedStack,
+            }
+          : {}
+      )
+    );
+  });
+  const transports: transport[] = [
+    new winston.transports.Console({
+      level,
+      handleExceptions: true,
+      format: consoleFormat,
+    }),
+  ];
 
-export const withPermission = (
-  permission: string,
-  getRedisClient: () => RedisClientType
-) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const redis = getRedisClient();
-    return checkPermission(redis, permission)(req, res, next);
-  };
+  const logger: Logger = winston.createLogger({
+    exitOnError: false,
+    transports,
+  });
+
+  const originalInfo = logger.info.bind(logger);
+  const originalError = logger.error.bind(logger);
+  const strictLogger: StrictLogger = Object.assign(logger, {
+    info: (message: string, context: string) => {
+      originalInfo(message, { context });
+    },
+    error: (message: string, context: string, error?: Error | CustomError) => {
+      originalError(message, {
+        context,
+        ...(error ? { error } : {}),
+      });
+    },
+  });
+
+  return strictLogger;
 };
