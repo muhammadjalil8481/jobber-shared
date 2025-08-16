@@ -41,12 +41,8 @@ export const winstonLogger = ({
       cleanedStack = cleanedStack
         .split('\n')
         .filter(
-          (line) =>
-            !line.includes('node_modules') &&
-            !line.includes('internal/') &&
-            !line.includes('/tsx/')
-        )
-        .join('\n');
+          (line) => line.includes("src")
+        ).join('\n')
     }
     return JSON.stringify(
       Object.assign(
