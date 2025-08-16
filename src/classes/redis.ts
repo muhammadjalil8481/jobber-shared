@@ -26,7 +26,7 @@ export class Redis {
     while (retries <= maxRetries) {
       try {
         await this.redisClient.connect();
-        this.log.info('Redis client connected successfully', context);
+        this.log.info(`Redis client connected successfully ${await this.redisClient.ping()}`, context);
         return this.redisClient as RedisClientType;
       } catch (error) {
         this.log.error(
