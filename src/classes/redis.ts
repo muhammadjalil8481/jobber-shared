@@ -5,6 +5,8 @@ import { StrictLogger } from '../logger';
 export class Redis {
   redisClient: RedisClientType;
   log: StrictLogger;
+  retries: number = 1;
+  maxRetries: number = 3;
   constructor(url: string, log: StrictLogger) {
     this.log = log;
     this.redisClient = createClient({
@@ -12,31 +14,37 @@ export class Redis {
     });
 
     this.redisClient.on('error', (err) => {
-      this.log.error('Error connecting to redis', 'redis.ts/error-callback', err);
+      this.retries++;
+      this.log.error(
+        `Error connecting to redis - attempt ${this.retries} of ${this.maxRetries}`,
+        'redis.ts/error-callback',
+        err
+      );
     });
   }
 
   async createRedisConnection(): Promise<RedisClientType> {
     const context = 'redis.ts/createRedisConnection()';
-    let retries = 1;
-    const maxRetries = 3;
 
     if (this.redisClient.isOpen) return this.redisClient as RedisClientType;
 
-    while (retries <= maxRetries) {
+    while (this.retries <= this.maxRetries) {
       try {
         await this.redisClient.connect();
-        this.log.info(`Redis client connected successfully ${await this.redisClient.ping()}`, context);
+        this.log.info(
+          `Redis client connected successfully ${await this.redisClient.ping()}`,
+          context
+        );
         return this.redisClient as RedisClientType;
       } catch (error) {
         this.log.error(
-          `Error connecting to redis - attempt ${retries} of ${maxRetries}`,
+          `Error connecting to redis - attempt ${this.retries} of ${this.maxRetries}`,
           context,
           error as Error
         );
 
-        retries++;
-        if (retries > maxRetries) {
+        this.retries++;
+        if (this.retries > this.maxRetries) {
           this.log.error('Max Redis connection attempts exceeded', context);
           process.exit(1);
         }
