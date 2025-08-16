@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongoose';
 
 export interface IBuyerDocument {
+  userId?: number;
   _id?: string | ObjectId;
   name?: string;
   username?: string;
