@@ -13,12 +13,13 @@ export class Redis {
       url,
       socket: {
         reconnectStrategy: (retries) => {
+          this.retries = retries
           if (retries >= this.maxRetries) {
             this.log.error(
               `Max Redis reconnect attempts (${this.maxRetries}) exceeded`,
               'redis.ts/reconnectStrategy()'
             );
-            process.exit(1);
+            process.exit(1)
           }
           return 1000; // wait 1s before next retry
         },
