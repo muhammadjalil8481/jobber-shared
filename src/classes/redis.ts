@@ -11,10 +11,21 @@ export class Redis {
     this.log = log;
     this.redisClient = createClient({
       url,
+      socket: {
+        reconnectStrategy: (retries) => {
+          if (retries >= this.maxRetries) {
+            this.log.error(
+              `Max Redis reconnect attempts (${this.maxRetries}) exceeded`,
+              'redis.ts/reconnectStrategy()'
+            );
+            process.exit(1);
+          }
+          return 1000; // wait 1s before next retry
+        },
+      },
     });
 
     this.redisClient.on('error', (err) => {
-      this.retries++;
       this.log.error(
         `Error connecting to redis - attempt ${this.retries} of ${this.maxRetries}`,
         'redis.ts/error-callback',
