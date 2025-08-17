@@ -86,4 +86,5 @@ export interface ISellerDocument extends Record<string, SellerType> {
   totalGigs?: number;
   paypal?: string; // not needed
   createdAt?: Date | string;
+  roles: number[]
 }

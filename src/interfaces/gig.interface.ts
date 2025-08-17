@@ -30,6 +30,7 @@ export interface ISellerGig {
   // this "id" property is used because elastcisearch does not accept a key with an underscore "_id"
   // elasticsearch has _id as a reserved field name
   id?: string | ObjectId;
+  userId?: number;
   sellerId?: string | ObjectId;
   title: string;
   username?: string;
@@ -48,6 +49,7 @@ export interface ISellerGig {
   basicDescription: string;
   price: number;
   coverImage: string;
+  coverImageId: string;
   createdAt?: Date | string;
   sortId?: number;
   // this is added here because we will use the json format of the document
