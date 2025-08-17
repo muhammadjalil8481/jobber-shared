@@ -103,7 +103,7 @@ export interface IGigTopProps {
 }
 
 export interface IGigCount {
-  type: string;
   userId: number
+  type: string;
   count: number;
 }
