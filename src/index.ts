@@ -7,6 +7,7 @@ export * from './interfaces/order.interface';
 export * from './interfaces/review.interface';
 export * from './interfaces/search.interface';
 export * from './interfaces/seller.interface';
+export * from "./interfaces/gig.interface";
 export {
   LogLevel,
   type LoggerOptionArguments,
