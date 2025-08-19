@@ -87,4 +87,5 @@ export interface ISellerDocument extends Record<string, SellerType> {
   paypal?: string; // not needed
   createdAt?: Date | string;
   roles: number[]
+  userId?:number;
 }
