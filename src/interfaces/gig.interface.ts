@@ -40,7 +40,7 @@ export interface ISellerGig {
   ratingSum?: number; // make sure to add this to elasticsearch as a double
   ratingCategories?: IRatingCategories;
   expectedDelivery: string;
-  expectedDeliveryInMinutes?: string;
+  expectedDeliveryInMinutes?: number;
   basicTitle: string;
   basicDescription: string;
   price: number;
