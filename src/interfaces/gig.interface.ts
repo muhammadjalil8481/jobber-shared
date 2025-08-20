@@ -1,13 +1,8 @@
-import { ObjectId } from "mongoose";
-import { IRatingCategories, IReviewDocument } from "./review.interface";
-import { ISellerDocument } from "./seller.interface";
+import { ObjectId } from 'mongoose';
+import { IRatingCategories, IReviewDocument } from './review.interface';
+import { ISellerDocument } from './seller.interface';
 
-export type GigType =
-  | string
-  | string[]
-  | number
-  | unknown
-  | undefined;
+export type GigType = string | string[] | number | unknown | undefined;
 
 export interface ICreateGig extends Record<string, GigType> {
   // [key: string]: string | string[] | number | undefined;
@@ -45,6 +40,7 @@ export interface ISellerGig {
   ratingSum?: number; // make sure to add this to elasticsearch as a double
   ratingCategories?: IRatingCategories;
   expectedDelivery: string;
+  expectedDeliveryInMinutes?: string;
   basicTitle: string;
   basicDescription: string;
   price: number;
@@ -103,7 +99,7 @@ export interface IGigTopProps {
 }
 
 export interface IGigCount {
-  userId: number
+  userId: number;
   type: string;
   count: number;
 }
